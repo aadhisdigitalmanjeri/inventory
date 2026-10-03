@@ -70,10 +70,6 @@ export default function InvoiceModal({ sale, onClose }) {
                   <span className="text-slate-400">Date: </span>
                   <span className="font-semibold text-slate-800">{sale.sale_date}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400">Payment: </span>
-                  <span className="font-semibold text-indigo-700">{sale.payment_method || 'Paid'}</span>
-                </div>
               </div>
             </div>
           </div>

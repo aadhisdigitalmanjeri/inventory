@@ -18,11 +18,6 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
 
   if (!item) return null;
 
-  const purchasePrice = Number(item.purchase_price) || 0;
-  const currentSalePrice = Number(formData.sale_price) || 0;
-  const profit = currentSalePrice - purchasePrice;
-  const profitPercent = purchasePrice > 0 ? ((profit / purchasePrice) * 100).toFixed(1) : 0;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.sold_to || !formData.sale_date || !formData.sale_price) {
@@ -150,60 +145,28 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
 
           </div>
 
-          {/* Sale Price & Profit Indicator */}
-          <div className="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-              <div>
-                <label className="block text-xs font-bold text-indigo-900 mb-1">
-                  Sale Price (₹) *
-                </label>
-                <div className="relative">
-                  <span className="text-sm font-bold text-slate-500 absolute left-3 top-2.5 sm:top-2">₹</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    required
-                    value={formData.sale_price}
-                    onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
-                    className="w-full pl-7 pr-3 py-2 text-base sm:text-sm font-bold bg-white border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-indigo-950"
-                  />
-                </div>
-              </div>
-
-              {/* Real-time Profit */}
-              <div className="bg-white p-2.5 rounded-xl border border-indigo-100">
-                <div className="text-[11px] text-slate-500 font-medium">Estimated Gross Margin</div>
-                <div className="flex items-baseline space-x-2">
-                  <span className={`text-base font-extrabold ${profit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                    ₹{profit.toLocaleString()}
-                  </span>
-                  <span className={`text-xs font-bold px-1.5 py-0.2 rounded ${profit >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                    {profitPercent}%
-                  </span>
-                </div>
-              </div>
+          {/* Sale Price */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Sale Price (₹) *
+            </label>
+            <div className="relative">
+              <span className="text-sm font-bold text-slate-500 absolute left-3 top-2.5 sm:top-2">₹</span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                required
+                value={formData.sale_price}
+                onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
+                className="w-full pl-7 pr-3 py-2 text-base sm:text-sm font-bold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-slate-900"
+              />
             </div>
           </div>
 
-          {/* Payment Method, Warranty, Invoice */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Payment Method
-              </label>
-              <select
-                value={formData.payment_method}
-                onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
-                className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden bg-white"
-              >
-                <option value="UPI / Bank Transfer">UPI / Bank Transfer</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Cash">Cash</option>
-                <option value="Consumer Finance / EMI">Finance / EMI</option>
-              </select>
-            </div>
+          {/* Warranty & Invoice */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">

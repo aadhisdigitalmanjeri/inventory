@@ -150,21 +150,6 @@ export default function ImeiTrackerView({
                 IMEI: <strong className="text-slate-800">{result.imei}</strong>
               </div>
             </div>
-
-            {/* Profit Margin if Sold */}
-            {result.margin !== null && (
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-left sm:text-right w-full sm:w-auto">
-                <span className="text-xs text-emerald-700 font-semibold block">Realized Profit Margin</span>
-                <div className="flex items-baseline space-x-1.5 justify-start sm:justify-end mt-0.5">
-                  <span className="text-base sm:text-lg font-extrabold text-emerald-800">
-                    +₹{result.margin.toLocaleString()}
-                  </span>
-                  <span className="text-xs font-bold bg-emerald-200/60 text-emerald-900 px-1.5 py-0.5 rounded">
-                    {result.marginPercent}%
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Timeline Visual Cards */}
@@ -281,7 +266,6 @@ export default function ImeiTrackerView({
                         <span className="font-bold text-emerald-700 text-sm">
                           ₹{(Number(result.b2c.sale_price) || 0).toLocaleString()}
                         </span>
-                        <span className="text-[10px] text-slate-400 block">{result.b2c.payment_method}</span>
                       </div>
                       <div className="p-2.5 bg-slate-50 rounded-xl">
                         <span className="text-slate-400 block text-[10px] uppercase font-bold">Retail Invoice</span>

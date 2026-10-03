@@ -225,25 +225,8 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
             </div>
           </div>
 
-          {/* Payment Method, Warranty, Invoice */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Payment Method
-              </label>
-              <select
-                value={formData.payment_method}
-                onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
-                className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden bg-white"
-              >
-                <option value="UPI / Bank Transfer">UPI / Bank Transfer</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Cash">Cash</option>
-                <option value="Consumer Finance / EMI">Finance / EMI</option>
-              </select>
-            </div>
-
+          {/* Warranty & Invoice */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Warranty (Months)
@@ -259,6 +242,7 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 />
               </div>
             </div>
+
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">

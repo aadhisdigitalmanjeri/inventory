@@ -37,9 +37,8 @@ export default function B2CView({
 
   const handleExportCSV = () => {
     if (!items || items.length === 0) return;
-    const headers = ['ID', 'From (Source)', 'Model', 'IMEI', 'Sold To (Customer)', 'Customer Phone', 'Sale Date', 'Sale Price', 'Cost Price', 'Margin', 'Invoice No', 'Payment Method'];
+    const headers = ['ID', 'From (Source)', 'Model', 'IMEI', 'Sold To (Customer)', 'Customer Phone', 'Sale Date', 'Sale Price', 'Invoice No'];
     const rows = items.map(s => {
-      const margin = s.purchase_price ? (s.sale_price - s.purchase_price) : '';
       return [
         s.id,
         `"${(s.from_source || '').replace(/"/g, '""')}"`,
@@ -49,10 +48,7 @@ export default function B2CView({
         `"${(s.customer_phone || '').replace(/"/g, '""')}"`,
         s.sale_date,
         s.sale_price,
-        s.purchase_price || '',
-        margin,
-        `"${(s.invoice_no || '').replace(/"/g, '""')}"`,
-        `"${(s.payment_method || '').replace(/"/g, '""')}"`
+        `"${(s.invoice_no || '').replace(/"/g, '""')}"`
       ];
     });
 
@@ -149,7 +145,6 @@ export default function B2CView({
                     <span className="font-extrabold text-emerald-700 text-base block">
                       ₹{(Number(sale.sale_price) || 0).toLocaleString()}
                     </span>
-                    <span className="text-[10px] text-slate-400">{sale.payment_method}</span>
                   </div>
                 </div>
 
@@ -179,7 +174,7 @@ export default function B2CView({
                   </button>
                 </div>
 
-                {/* Customer Details & Margin */}
+                {/* Customer Details & Date */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Sold To</span>
@@ -199,20 +194,8 @@ export default function B2CView({
                   </div>
 
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Profit Margin</span>
-                    {margin !== null ? (
-                      <div>
-                        <span className={`font-bold ${margin >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                          +₹{margin.toLocaleString()}
-                        </span>
-                        <span className="ml-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1 py-0.2 rounded">
-                          {marginPercent}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-[10px] text-slate-400">Direct Retail</span>
-                    )}
-                    <span className="text-[10px] text-slate-500 block mt-0.5">{sale.sale_date}</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Sale Date</span>
+                    <span className="text-xs font-semibold text-slate-800 block mt-0.5">{sale.sale_date}</span>
                   </div>
                 </div>
 
@@ -261,7 +244,6 @@ export default function B2CView({
                 <th className="py-3 px-4">To (Customer)</th>
                 <th className="py-3 px-4">Sale Date</th>
                 <th className="py-3 px-4">Sale Price</th>
-                <th className="py-3 px-4">Margin / Profit</th>
                 <th className="py-3 px-4 text-center">Invoice</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
@@ -269,7 +251,7 @@ export default function B2CView({
             <tbody className="divide-y divide-slate-100">
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-400">
+                  <td colSpan={8} className="py-12 text-center text-slate-400">
                     <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-40" />
                     <p className="text-sm font-medium">No B2C sales recorded yet.</p>
                     <p className="text-xs text-slate-400 mt-1">You can sell directly from B2B inventory or click "Record Retail Sale" above.</p>
@@ -277,13 +259,6 @@ export default function B2CView({
                 </tr>
               ) : (
                 items.map((sale) => {
-                  const margin = sale.purchase_price !== null && sale.purchase_price !== undefined
-                    ? (Number(sale.sale_price) - Number(sale.purchase_price))
-                    : null;
-                  const marginPercent = margin !== null && Number(sale.purchase_price) > 0
-                    ? ((margin / Number(sale.purchase_price)) * 100).toFixed(0)
-                    : null;
-
                   return (
                     <tr key={sale.id} className="hover:bg-slate-50/80 transition">
                       <td className="py-3.5 px-4">
@@ -323,23 +298,6 @@ export default function B2CView({
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-900 whitespace-nowrap">
                         ₹{(Number(sale.sale_price) || 0).toLocaleString()}
-                        <span className="block text-[10px] font-normal text-slate-400">
-                          {sale.payment_method}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        {margin !== null ? (
-                          <div>
-                            <span className={`font-bold ${margin >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                              +₹{margin.toLocaleString()}
-                            </span>
-                            <span className="ml-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1 rounded">
-                              {marginPercent}%
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-[10px] text-slate-400">Direct Retail</span>
-                        )}
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <button
