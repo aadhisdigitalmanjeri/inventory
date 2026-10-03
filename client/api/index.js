@@ -1,7 +1,9 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import pg from 'pg';
+
+const { Pool } = pg;
 
 let pool = null;
 
@@ -50,7 +52,7 @@ app.use((req, res, next) => {
 const router = express.Router();
 
 router.get('/health', (req, res) => {
-  res.json({ status: 'ok', server: 'vercel-serverless', time: new Date().toISOString() });
+  res.json({ status: 'ok', server: 'vercel-esm-serverless', time: new Date().toISOString() });
 });
 
 // Stats
@@ -496,4 +498,4 @@ router.get('/imei/lookup/:imei', async (req, res) => {
 app.use('/api', router);
 app.use('/', router);
 
-module.exports = app;
+export default app;
