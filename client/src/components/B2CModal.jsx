@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ShoppingBag, Smartphone, Hash, Calendar, DollarSign, User, Phone, Mail, FileText, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, ShoppingBag, Smartphone, Hash, Calendar, DollarSign, User, Phone, FileText, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
   const [formData, setFormData] = useState({
@@ -8,7 +8,6 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
     imei: '',
     sold_to: '',
     customer_phone: '',
-    customer_email: '',
     sale_date: new Date().toISOString().split('T')[0],
     sale_price: '',
     payment_method: 'UPI / Bank Transfer',
@@ -28,7 +27,6 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
         imei: initialData.imei || '',
         sold_to: initialData.sold_to || '',
         customer_phone: initialData.customer_phone || '',
-        customer_email: initialData.customer_email || '',
         sale_date: initialData.sale_date || new Date().toISOString().split('T')[0],
         sale_price: initialData.sale_price || '',
         payment_method: initialData.payment_method || 'UPI / Bank Transfer',
@@ -43,7 +41,6 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
         imei: '',
         sold_to: '',
         customer_phone: '',
-        customer_email: '',
         sale_date: new Date().toISOString().split('T')[0],
         sale_price: '',
         payment_method: 'UPI / Bank Transfer',
@@ -188,23 +185,8 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 />
               </div>
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Customer Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
-                <input
-                  type="email"
-                  placeholder="e.g. priya@example.com"
-                  value={formData.customer_email}
-                  onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
-                />
-              </div>
-            </div>
           </div>
+
 
           {/* Sale Date & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

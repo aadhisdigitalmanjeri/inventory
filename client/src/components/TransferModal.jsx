@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { X, ArrowRight, ShieldCheck, DollarSign, Calendar, User, Phone, Mail, FileText, CheckCircle2 } from 'lucide-react';
+import { X, ArrowRight, ShieldCheck, DollarSign, Calendar, User, Phone, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function TransferModal({ item, onClose, onTransferSuccess }) {
   const [formData, setFormData] = useState({
     sold_to: '',
     customer_phone: '',
-    customer_email: '',
     sale_date: new Date().toISOString().split('T')[0],
     sale_price: item ? Math.round(item.purchase_price * 1.15) : '',
     payment_method: 'UPI / Bank Transfer',
@@ -131,24 +130,8 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
             </div>
           </div>
 
-          {/* Customer Email & Sale Date */}
+          {/* Sale Date & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Customer Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
-                <input
-                  type="email"
-                  placeholder="e.g. customer@example.com"
-                  value={formData.customer_email}
-                  onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
-                />
-              </div>
-            </div>
-
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Sale Date *
@@ -164,6 +147,7 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                 />
               </div>
             </div>
+
           </div>
 
           {/* Sale Price & Profit Indicator */}

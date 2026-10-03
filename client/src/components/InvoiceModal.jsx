@@ -88,9 +88,6 @@ export default function InvoiceModal({ sale, onClose }) {
               {sale.customer_phone && (
                 <p className="text-xs text-slate-600 mt-0.5">Phone: {sale.customer_phone}</p>
               )}
-              {sale.customer_email && (
-                <p className="text-xs text-slate-600">Email: {sale.customer_email}</p>
-              )}
             </div>
 
             <div>
