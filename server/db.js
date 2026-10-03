@@ -1,76 +1,81 @@
-const Database = require('better-sqlite3');
-const path = require('path');
-const fs = require('fs');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-const dataDir = path.join(__dirname, '..', 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error('ERROR: DATABASE_URL is not set in .env');
 }
 
-const dbPath = path.join(dataDir, 'inventory.db');
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-// Enable WAL mode for high performance and concurrency
-db.pragma('journal_mode = WAL');
+// Helper for queries
+async function query(text, params) {
+  const start = Date.now();
+  const res = await pool.query(text, params);
+  const duration = Date.now() - start;
+  return res;
+}
 
-// Initialize schema
-function initSchema() {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS b2b_inventory (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      purchased_from TEXT NOT NULL,
-      model TEXT NOT NULL,
-      imei TEXT NOT NULL UNIQUE,
-      purchase_date TEXT NOT NULL,
-      purchase_price REAL DEFAULT 0,
-      status TEXT DEFAULT 'In Stock', -- 'In Stock', 'Sold to B2C', 'Returned'
-      invoice_no TEXT,
-      notes TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+// Initialize tables on Supabase
+async function initSchema() {
+  try {
+    await query(`
+      CREATE TABLE IF NOT EXISTS b2b_inventory (
+        id BIGSERIAL PRIMARY KEY,
+        purchased_from TEXT NOT NULL,
+        model TEXT NOT NULL,
+        imei TEXT NOT NULL UNIQUE,
+        purchase_date DATE NOT NULL,
+        purchase_price NUMERIC(12, 2) DEFAULT 0,
+        status TEXT DEFAULT 'In Stock',
+        invoice_no TEXT,
+        notes TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
 
-    CREATE TABLE IF NOT EXISTS b2c_sales (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      from_source TEXT NOT NULL,       -- Source/Vendor or B2B reference
-      model TEXT NOT NULL,
-      imei TEXT NOT NULL,
-      sold_to TEXT NOT NULL,           -- Customer name
-      customer_phone TEXT,
-      customer_email TEXT,
-      sale_date TEXT NOT NULL,
-      sale_price REAL DEFAULT 0,
-      payment_method TEXT DEFAULT 'Cash', -- Cash, UPI, Card, Net Banking
-      warranty_months INTEGER DEFAULT 12,
-      invoice_no TEXT NOT NULL UNIQUE,
-      b2b_item_id INTEGER,
-      notes TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (b2b_item_id) REFERENCES b2b_inventory(id) ON DELETE SET NULL
-    );
+      CREATE TABLE IF NOT EXISTS b2c_sales (
+        id BIGSERIAL PRIMARY KEY,
+        from_source TEXT NOT NULL,
+        model TEXT NOT NULL,
+        imei TEXT NOT NULL,
+        sold_to TEXT NOT NULL,
+        customer_phone TEXT,
+        customer_email TEXT,
+        sale_date DATE NOT NULL,
+        sale_price NUMERIC(12, 2) DEFAULT 0,
+        payment_method TEXT DEFAULT 'Cash',
+        warranty_months INT DEFAULT 12,
+        invoice_no TEXT NOT NULL UNIQUE,
+        b2b_item_id BIGINT REFERENCES b2b_inventory(id) ON DELETE SET NULL,
+        notes TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
 
-    CREATE INDEX IF NOT EXISTS idx_b2b_imei ON b2b_inventory(imei);
-    CREATE INDEX IF NOT EXISTS idx_b2c_imei ON b2c_sales(imei);
-    CREATE INDEX IF NOT EXISTS idx_b2b_status ON b2b_inventory(status);
-  `);
+      CREATE INDEX IF NOT EXISTS idx_b2b_imei ON b2b_inventory(imei);
+      CREATE INDEX IF NOT EXISTS idx_b2c_imei ON b2c_sales(imei);
+      CREATE INDEX IF NOT EXISTS idx_b2b_status ON b2b_inventory(status);
+    `);
 
-  // Seed sample data if empty
-  const b2bCount = db.prepare('SELECT COUNT(*) as count FROM b2b_inventory').get().count;
-  if (b2bCount === 0) {
-    seedSampleData();
+    // Check if initial seed is needed
+    const countRes = await query('SELECT COUNT(*) as count FROM b2b_inventory');
+    if (parseInt(countRes.rows[0].count, 10) === 0) {
+      console.log('Seeding initial data into Supabase...');
+      await seedInitialData();
+    }
+
+    console.log('Supabase tables initialized successfully!');
+  } catch (err) {
+    console.error('Error initializing Supabase schema:', err.message);
   }
 }
 
-function seedSampleData() {
-  const insertB2B = db.prepare(`
-    INSERT INTO b2b_inventory (purchased_from, model, imei, purchase_date, purchase_price, status, invoice_no, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertB2C = db.prepare(`
-    INSERT INTO b2c_sales (from_source, model, imei, sold_to, customer_phone, customer_email, sale_date, sale_price, payment_method, warranty_months, invoice_no, b2b_item_id, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
+async function seedInitialData() {
   const sampleB2B = [
     {
       purchased_from: 'Apex Distributors Ltd',
@@ -134,59 +139,67 @@ function seedSampleData() {
     }
   ];
 
-  const seedTransaction = db.transaction(() => {
-    const insertedIds = [];
-    for (const item of sampleB2B) {
-      const res = insertB2B.run(
+  for (const item of sampleB2B) {
+    const insertRes = await query(`
+      INSERT INTO b2b_inventory (purchased_from, model, imei, purchase_date, purchase_price, status, invoice_no, notes)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id
+    `, [
+      item.purchased_from,
+      item.model,
+      item.imei,
+      item.purchase_date,
+      item.purchase_price,
+      item.status,
+      item.invoice_no,
+      item.notes
+    ]);
+
+    if (item.imei === '359284102948172') {
+      await query(`
+        INSERT INTO b2c_sales (from_source, model, imei, sold_to, customer_phone, customer_email, sale_date, sale_price, payment_method, warranty_months, invoice_no, b2b_item_id, notes)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `, [
         item.purchased_from,
         item.model,
         item.imei,
-        item.purchase_date,
-        item.purchase_price,
-        item.status,
-        item.invoice_no,
-        item.notes
-      );
-      insertedIds.push(res.lastInsertRowid);
+        'Rahul Sharma',
+        '+91 98765 43210',
+        'rahul.sharma@example.com',
+        '2026-09-28',
+        124999,
+        'UPI / Bank Transfer',
+        12,
+        'INV-B2C-1001',
+        insertRes.rows[0].id,
+        'Customer opted for full payment via UPI'
+      ]);
+    } else if (item.imei === '354928109384722') {
+      await query(`
+        INSERT INTO b2c_sales (from_source, model, imei, sold_to, customer_phone, customer_email, sale_date, sale_price, payment_method, warranty_months, invoice_no, b2b_item_id, notes)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `, [
+        item.purchased_from,
+        item.model,
+        item.imei,
+        'Pooja Nair',
+        '+91 91234 56789',
+        'pooja.nair@example.com',
+        '2026-10-01',
+        119999,
+        'Credit Card',
+        12,
+        'INV-B2C-1002',
+        insertRes.rows[0].id,
+        'Sold with complementary protective case'
+      ]);
     }
-
-    // Seed corresponding B2C sales for the two sold items
-    insertB2C.run(
-      'Apex Distributors Ltd',
-      'iPhone 15 Pro 128GB (Natural Titanium)',
-      '359284102948172',
-      'Rahul Sharma',
-      '+91 98765 43210',
-      'rahul.sharma@example.com',
-      '2026-09-28',
-      124999,
-      'UPI / Bank Transfer',
-      12,
-      'INV-B2C-1001',
-      insertedIds[0],
-      'Customer opted for full payment via UPI'
-    );
-
-    insertB2C.run(
-      'Galaxy Global Wholesalers',
-      'Samsung Galaxy S24 Ultra 256GB (Titanium Black)',
-      '354928109384722',
-      'Pooja Nair',
-      '+91 91234 56789',
-      'pooja.nair@example.com',
-      '2026-10-01',
-      119999,
-      'Credit Card',
-      12,
-      'INV-B2C-1002',
-      insertedIds[3],
-      'Sold with complementary protective case'
-    );
-  });
-
-  seedTransaction();
+  }
 }
 
 initSchema();
 
-module.exports = db;
+module.exports = {
+  query,
+  pool
+};
