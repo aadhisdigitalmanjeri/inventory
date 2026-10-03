@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Printer, Download, CheckCircle, ShieldCheck, Phone, Mail, Building, MapPin } from 'lucide-react';
+import { X, Printer } from 'lucide-react';
 
 export default function InvoiceModal({ sale, onClose }) {
   if (!sale) return null;
@@ -9,9 +9,6 @@ export default function InvoiceModal({ sale, onClose }) {
   };
 
   const salePrice = Number(sale.sale_price) || 0;
-  const taxRate = 0.18;
-  const basePrice = Math.round(salePrice / (1 + taxRate));
-  const taxAmount = salePrice - basePrice;
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -49,11 +46,12 @@ export default function InvoiceModal({ sale, onClose }) {
               <div className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 flex items-center space-x-2">
                 <span>AADHIS DIGITAL HUB</span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">B2B & B2C Smart Device & Electronics Hub</p>
+              <p className="text-xs text-slate-700 font-bold tracking-wide mt-0.5">
+                MOBILES | ACCESSORIES | SALES &amp; SERVICE
+              </p>
               <div className="text-xs text-slate-600 mt-2 space-y-0.5">
-                <p>Ground Floor, Tech Boulevard, Sector 62</p>
-                <p>GSTIN: 07AAECN4810M1Z2 | Support: +91 99990 12345</p>
-                <p>Email: billing@aadhisdigitalhub.com</p>
+                <p className="font-medium">Jaseela Junction, Manjeri</p>
+                <p className="font-semibold text-slate-800">Phone: 9048504040</p>
               </div>
             </div>
 
@@ -74,35 +72,15 @@ export default function InvoiceModal({ sale, onClose }) {
             </div>
           </div>
 
-          {/* Customer & Origin */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
-            <div>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Billed To (Customer):
-              </span>
-              <p className="font-bold text-sm sm:text-base text-slate-900">{sale.sold_to}</p>
-              {sale.customer_phone && (
-                <p className="text-xs text-slate-600 mt-0.5">Phone: {sale.customer_phone}</p>
-              )}
-            </div>
-
-            <div>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Origin & Distribution Channel:
-              </span>
-              <p className="text-xs text-slate-700">
-                <span className="font-semibold">Dispatched From: </span>
-                {sale.from_source}
-              </p>
-              <p className="text-xs text-slate-700">
-                <span className="font-semibold">Segment: </span>
-                B2C Retail Sale
-              </p>
-              <p className="text-xs text-slate-700">
-                <span className="font-semibold">Warranty Period: </span>
-                {sale.warranty_months ? `${sale.warranty_months} Months Standard Warranty` : 'Standard'}
-              </p>
-            </div>
+          {/* Customer Details */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Billed To (Customer):
+            </span>
+            <p className="font-bold text-sm sm:text-base text-slate-900">{sale.sold_to}</p>
+            {sale.customer_phone && (
+              <p className="text-xs text-slate-600 mt-0.5 font-medium">Phone: {sale.customer_phone}</p>
+            )}
           </div>
 
           {/* Itemized Table */}
@@ -119,7 +97,6 @@ export default function InvoiceModal({ sale, onClose }) {
                 <tr>
                   <td className="py-3 px-3">
                     <div className="font-bold text-slate-900">{sale.model}</div>
-                    <div className="text-[10px] text-slate-400">Handset with certified accessories</div>
                   </td>
                   <td className="py-3 px-3 font-mono font-bold text-slate-800">
                     {sale.imei}
@@ -132,38 +109,11 @@ export default function InvoiceModal({ sale, onClose }) {
             </table>
           </div>
 
-          {/* Pricing Totals */}
-          <div className="flex justify-end">
-            <div className="w-full sm:w-64 space-y-1.5 text-xs">
-              <div className="flex justify-between text-slate-600">
-                <span>Taxable Amount (Excl. GST):</span>
-                <span>₹{basePrice.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>GST (18% Included):</span>
-                <span>₹{taxAmount.toLocaleString()}</span>
-              </div>
-              <div className="border-t border-slate-300 pt-2 flex justify-between font-black text-sm sm:text-base text-slate-950">
-                <span>Total Amount:</span>
-                <span className="text-indigo-600">₹{salePrice.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Warranty Terms & Verification Stamp */}
-          <div className="pt-4 border-t border-slate-200 text-xs text-slate-500 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <span className="font-bold text-slate-700 block mb-1">Warranty & Return Terms</span>
-              <ul className="list-disc pl-4 space-y-0.5 text-[10px] sm:text-[11px]">
-                <li>Valid against manufacturer defects for {sale.warranty_months || 12} months.</li>
-                <li>Physical or liquid damage is strictly excluded.</li>
-                <li>Original IMEI sticker/bill required for service claims.</li>
-              </ul>
-            </div>
-            <div className="text-left sm:text-right flex flex-col justify-end items-start sm:items-end pt-2 sm:pt-0">
-              <div className="w-32 border-b border-slate-400 mb-1"></div>
-              <span className="text-[11px] font-bold text-slate-700">Authorized Signatory</span>
-              <span className="text-[10px] text-slate-400">Aadhis Digital Hub</span>
+          {/* Pricing Total */}
+          <div className="flex justify-end pt-2">
+            <div className="w-full sm:w-64 border-t-2 border-slate-900 pt-3 flex justify-between items-baseline">
+              <span className="font-bold text-sm text-slate-900">Total Amount:</span>
+              <span className="font-black text-lg sm:text-xl text-indigo-700">₹{salePrice.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -171,3 +121,4 @@ export default function InvoiceModal({ sale, onClose }) {
     </div>
   );
 }
+
