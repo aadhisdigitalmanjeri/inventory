@@ -469,7 +469,11 @@ app.get('/api/imei/lookup/:imei', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Aadhis Digital Hub Server running on http://localhost:${PORT}`);
-  console.log(`Connected to Supabase PostgreSQL database!`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Aadhis Digital Hub Server running on http://localhost:${PORT}`);
+    console.log(`Connected to Supabase PostgreSQL database!`);
+  });
+}
+
+module.exports = app;
