@@ -223,13 +223,8 @@ export default function App() {
 
       {/* Footer (Desktop only) */}
       <footer className="hidden md:block border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center">
           <span>Aadhis Digital Hub &copy; 2026. All rights reserved.</span>
-          <div className="flex items-center space-x-3 text-slate-400">
-            <span>B2B Procurement: Purchased From, Model, IMEI</span>
-            <span>•</span>
-            <span>B2C Retail: From, Model, IMEI, To</span>
-          </div>
         </div>
       </footer>
 
