@@ -17,10 +17,18 @@ function generateInvoiceNo() {
   return `${prefix}${time}${randomSuffix}`;
 }
 
+// Router for all API routes (mounted at /api and / for Vercel serverless compatibility)
+const router = express.Router();
+
+// Health check
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok', time: new Date().toISOString() });
+});
+
 // ----------------------------------------------------
 // DASHBOARD & STATS API
 // ----------------------------------------------------
-app.get('/api/stats', async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
     const totalB2BRes = await query('SELECT COUNT(*) as count FROM b2b_inventory');
     const inStockB2BRes = await query("SELECT COUNT(*) as count FROM b2b_inventory WHERE status = 'In Stock'");
@@ -68,7 +76,7 @@ app.get('/api/stats', async (req, res) => {
 // ----------------------------------------------------
 // B2B INVENTORY APIS
 // ----------------------------------------------------
-app.get('/api/b2b', async (req, res) => {
+router.get('/b2b', async (req, res) => {
   try {
     const { search, status } = req.query;
     let text = `
@@ -99,7 +107,7 @@ app.get('/api/b2b', async (req, res) => {
   }
 });
 
-app.post('/api/b2b', async (req, res) => {
+router.post('/b2b', async (req, res) => {
   try {
     const { purchased_from, model, imei, purchase_date, purchase_price, status, invoice_no, notes } = req.body;
 
@@ -134,7 +142,7 @@ app.post('/api/b2b', async (req, res) => {
   }
 });
 
-app.put('/api/b2b/:id', async (req, res) => {
+router.put('/b2b/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { purchased_from, model, imei, purchase_date, purchase_price, status, invoice_no, notes } = req.body;
@@ -170,7 +178,7 @@ app.put('/api/b2b/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/b2b/:id', async (req, res) => {
+router.delete('/b2b/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await query('DELETE FROM b2b_inventory WHERE id = $1', [id]);
@@ -182,7 +190,7 @@ app.delete('/api/b2b/:id', async (req, res) => {
 });
 
 // Transfer / Sell B2B item directly to B2C Customer
-app.post('/api/b2b/:id/transfer-to-b2c', async (req, res) => {
+router.post('/b2b/:id/transfer-to-b2c', async (req, res) => {
   try {
     const { id } = req.params;
     const { sold_to, customer_phone, customer_email, sale_date, sale_price, payment_method, warranty_months, notes, invoice_no } = req.body;
@@ -243,7 +251,7 @@ app.post('/api/b2b/:id/transfer-to-b2c', async (req, res) => {
 // ----------------------------------------------------
 // B2C SALES APIS
 // ----------------------------------------------------
-app.get('/api/b2c', async (req, res) => {
+router.get('/b2c', async (req, res) => {
   try {
     const { search } = req.query;
     let text = `
@@ -272,7 +280,7 @@ app.get('/api/b2c', async (req, res) => {
   }
 });
 
-app.post('/api/b2c', async (req, res) => {
+router.post('/b2c', async (req, res) => {
   try {
     const {
       from_source,
@@ -340,7 +348,7 @@ app.post('/api/b2c', async (req, res) => {
   }
 });
 
-app.put('/api/b2c/:id', async (req, res) => {
+router.put('/b2c/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -389,7 +397,7 @@ app.put('/api/b2c/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/b2c/:id', async (req, res) => {
+router.delete('/b2c/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const saleCheck = await query('SELECT * FROM b2c_sales WHERE id = $1', [id]);
@@ -414,7 +422,7 @@ app.delete('/api/b2c/:id', async (req, res) => {
 // ----------------------------------------------------
 // IMEI TRACKER & LIFECYCLE API
 // ----------------------------------------------------
-app.get('/api/imei/lookup/:imei', async (req, res) => {
+router.get('/imei/lookup/:imei', async (req, res) => {
   try {
     const { imei } = req.params;
     const cleanImei = imei.trim();
@@ -468,6 +476,10 @@ app.get('/api/imei/lookup/:imei', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Mount router at both /api and / so it works seamlessly locally and on Vercel
+app.use('/api', router);
+app.use('/', router);
 
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
