@@ -7,7 +7,7 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
     customer_phone: '',
     customer_email: '',
     sale_date: new Date().toISOString().split('T')[0],
-    sale_price: item ? Math.round(item.purchase_price * 1.15) : '', // suggested 15% margin default
+    sale_price: item ? Math.round(item.purchase_price * 1.15) : '',
     payment_method: 'UPI / Bank Transfer',
     warranty_months: 12,
     invoice_no: `INV-B2C-${Date.now().toString().slice(-6)}`,
@@ -44,72 +44,72 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white px-6 py-5 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white px-5 sm:px-6 py-4 sm:py-5 flex items-center justify-between shrink-0">
           <div>
             <div className="inline-flex items-center space-x-1.5 bg-indigo-500/30 text-indigo-200 text-xs px-2.5 py-0.5 rounded-full font-medium mb-1">
               <span>One-Click Transfer</span>
               <ArrowRight className="w-3 h-3" />
               <span>B2B to B2C</span>
             </div>
-            <h3 className="text-lg font-bold">Sell Device to End Customer</h3>
-            <p className="text-xs text-indigo-200">Dispatch directly from inward B2B stock to consumer invoice</p>
+            <h3 className="text-base sm:text-lg font-bold">Sell Device to Customer</h3>
+            <p className="text-[11px] sm:text-xs text-indigo-200">Dispatch directly from inward B2B stock</p>
           </div>
           <button
             onClick={onClose}
-            className="text-indigo-200 hover:text-white p-1 rounded-lg hover:bg-white/10 transition"
+            className="text-indigo-200 hover:text-white p-2 rounded-xl hover:bg-white/10 active:scale-90 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Device Information Summary Card */}
-        <div className="bg-slate-50 border-b border-slate-200 px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 text-sm">
+        {/* Device Info Summary */}
+        <div className="bg-slate-50 border-b border-slate-200 px-5 sm:px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs shrink-0">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Device / Model</span>
-            <span className="font-bold text-slate-800">{item.model}</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Model</span>
+            <span className="font-bold text-slate-800 truncate block">{item.model}</span>
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">IMEI / Serial</span>
-            <span className="font-mono text-xs bg-white px-2 py-0.5 rounded border border-slate-200 font-semibold text-slate-700">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">IMEI</span>
+            <span className="font-mono text-[11px] bg-white px-1.5 py-0.5 rounded border border-slate-200 font-bold text-slate-700 block truncate">
               {item.imei}
             </span>
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Purchased From</span>
-            <span className="text-slate-700 font-medium">{item.purchased_from}</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Purchased From</span>
+            <span className="text-slate-700 font-medium truncate block">{item.purchased_from}</span>
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Cost Price</span>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Cost Price</span>
             <span className="text-slate-900 font-bold">₹{purchasePrice.toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Transfer Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Form Body (Scrollable) */}
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-5 sm:p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
               {error}
             </div>
           )}
 
           {/* Customer Name & Phone */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Sold To (Customer Name) *
+                Customer Name (Sold To) *
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   required
-                  placeholder="e.g. John Doe"
+                  placeholder="e.g. Rahul Sharma"
                   value={formData.sold_to}
                   onChange={(e) => setFormData({ ...formData, sold_to: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -119,32 +119,32 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                 Customer Phone
               </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
-                  type="text"
+                  type="tel"
                   placeholder="e.g. +91 9876543210"
                   value={formData.customer_phone}
                   onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* Customer Email & Sale Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Customer Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="email"
                   placeholder="e.g. customer@example.com"
                   value={formData.customer_email}
                   onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -154,27 +154,27 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                 Sale Date *
               </label>
               <div className="relative">
-                <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="date"
                   required
                   value={formData.sale_date}
                   onChange={(e) => setFormData({ ...formData, sale_date: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* Sale Price & Profit Indicator */}
-          <div className="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+          <div className="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-2xl space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
               <div>
                 <label className="block text-xs font-bold text-indigo-900 mb-1">
                   Sale Price (₹) *
                 </label>
                 <div className="relative">
-                  <span className="text-sm font-bold text-slate-500 absolute left-3 top-2">₹</span>
+                  <span className="text-sm font-bold text-slate-500 absolute left-3 top-2.5 sm:top-2">₹</span>
                   <input
                     type="number"
                     min="0"
@@ -182,14 +182,14 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                     required
                     value={formData.sale_price}
                     onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
-                    className="w-full pl-7 pr-3 py-2 text-sm font-bold bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-indigo-950"
+                    className="w-full pl-7 pr-3 py-2 text-base sm:text-sm font-bold bg-white border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-indigo-950"
                   />
                 </div>
               </div>
 
-              {/* Real-time Margin & Profit */}
-              <div className="bg-white p-2.5 rounded-lg border border-indigo-100">
-                <div className="text-xs text-slate-500">Gross Margin & Profit</div>
+              {/* Real-time Profit */}
+              <div className="bg-white p-2.5 rounded-xl border border-indigo-100">
+                <div className="text-[11px] text-slate-500 font-medium">Estimated Gross Margin</div>
                 <div className="flex items-baseline space-x-2">
                   <span className={`text-base font-extrabold ${profit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     ₹{profit.toLocaleString()}
@@ -197,9 +197,6 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                   <span className={`text-xs font-bold px-1.5 py-0.2 rounded ${profit >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
                     {profitPercent}%
                   </span>
-                </div>
-                <div className="text-[10px] text-slate-400">
-                  Cost: ₹{purchasePrice.toLocaleString()} → Selling: ₹{currentSalePrice.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -214,7 +211,7 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
               <select
                 value={formData.payment_method}
                 onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden bg-white"
+                className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden bg-white"
               >
                 <option value="UPI / Bank Transfer">UPI / Bank Transfer</option>
                 <option value="Credit Card">Credit Card</option>
@@ -229,13 +226,13 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                 Warranty (Months)
               </label>
               <div className="relative">
-                <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="number"
                   min="0"
                   value={formData.warranty_months}
                   onChange={(e) => setFormData({ ...formData, warranty_months: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -245,12 +242,12 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
                 Invoice Number
               </label>
               <div className="relative">
-                <FileText className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <FileText className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   value={formData.invoice_no}
                   onChange={(e) => setFormData({ ...formData, invoice_no: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -259,37 +256,37 @@ export default function TransferModal({ item, onClose, onTransferSuccess }) {
           {/* Notes */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Remarks / Accessories Included
+              Remarks / Accessories
             </label>
             <input
               type="text"
-              placeholder="e.g. Box & charger handed over, screen guard applied"
+              placeholder="e.g. Box & charger handed over"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+              className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
             />
           </div>
 
-          {/* Buttons */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-3">
+          {/* Buttons Footer */}
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl transition text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center space-x-2 px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition shadow-md shadow-indigo-200 disabled:opacity-50"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-1.5 px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition shadow-md shadow-indigo-200 disabled:opacity-50"
             >
               {loading ? (
                 <span>Transferring...</span>
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Confirm Sale & Transfer</span>
+                  <span>Confirm Sale</span>
                 </>
               )}
             </button>

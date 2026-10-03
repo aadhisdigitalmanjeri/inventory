@@ -77,31 +77,31 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-emerald-900 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-emerald-900 text-white px-5 sm:px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <ShoppingBag className="w-5 h-5 text-emerald-400" />
-            <h3 className="font-bold text-base">
+            <h3 className="font-bold text-sm sm:text-base">
               {initialData ? 'Edit B2C Sale Record' : 'Record Direct B2C Retail Sale'}
             </h3>
           </div>
-          <button onClick={onClose} className="text-emerald-300 hover:text-white p-1 rounded-lg">
+          <button onClick={onClose} className="text-emerald-300 hover:text-white p-2 rounded-xl active:scale-90 transition">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-5 sm:p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
               {error}
             </div>
           )}
 
           {/* Segment Fields: From (Source) & Sold To (Customer) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 From (Source / Vendor / Branch) *
@@ -112,7 +112,7 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 placeholder="e.g. Apex Stock, Main Warehouse"
                 value={formData.from_source}
                 onChange={(e) => setFormData({ ...formData, from_source: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
               />
             </div>
 
@@ -121,34 +121,34 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 To (Customer Name) *
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   required
                   placeholder="e.g. Priya Sharma"
                   value={formData.sold_to}
                   onChange={(e) => setFormData({ ...formData, sold_to: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* Model & IMEI */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Model *
+                Device Model *
               </label>
               <div className="relative">
-                <Smartphone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Smartphone className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   required
                   placeholder="e.g. iPhone 15 Pro 128GB"
                   value={formData.model}
                   onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -158,33 +158,33 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 IMEI / Serial Number *
               </label>
               <div className="relative">
-                <Hash className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Hash className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   required
                   placeholder="e.g. 359284102948172"
                   value={formData.imei}
                   onChange={(e) => setFormData({ ...formData, imei: e.target.value.trim() })}
-                  className="w-full pl-9 pr-3 py-2 text-sm font-mono border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* Customer Phone & Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Customer Phone
               </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
-                  type="text"
+                  type="tel"
                   placeholder="e.g. +91 98765 43210"
                   value={formData.customer_phone}
                   onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -194,32 +194,32 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 Customer Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="email"
                   placeholder="e.g. priya@example.com"
                   value={formData.customer_email}
                   onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
           </div>
 
           {/* Sale Date & Price */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Sale Date *
               </label>
               <div className="relative">
-                <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="date"
                   required
                   value={formData.sale_date}
                   onChange={(e) => setFormData({ ...formData, sale_date: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 Sale Price (₹)
               </label>
               <div className="relative">
-                <span className="text-sm font-bold text-slate-400 absolute left-3 top-2">₹</span>
+                <span className="text-sm font-bold text-slate-400 absolute left-3 top-2.5 sm:top-2">₹</span>
                 <input
                   type="number"
                   min="0"
@@ -237,7 +237,7 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                   placeholder="0"
                   value={formData.sale_price}
                   onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
-                  className="w-full pl-7 pr-3 py-2 text-sm font-bold border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-7 pr-3 py-2 text-base sm:text-sm font-bold border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -252,7 +252,7 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
               <select
                 value={formData.payment_method}
                 onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden bg-white"
+                className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden bg-white"
               >
                 <option value="UPI / Bank Transfer">UPI / Bank Transfer</option>
                 <option value="Credit Card">Credit Card</option>
@@ -267,13 +267,13 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 Warranty (Months)
               </label>
               <div className="relative">
-                <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="number"
                   min="0"
                   value={formData.warranty_months}
                   onChange={(e) => setFormData({ ...formData, warranty_months: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -283,12 +283,12 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
                 Invoice Number
               </label>
               <div className="relative">
-                <FileText className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <FileText className="w-4 h-4 text-slate-400 absolute left-3 top-3 sm:top-2.5" />
                 <input
                   type="text"
                   value={formData.invoice_no}
                   onChange={(e) => setFormData({ ...formData, invoice_no: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-mono border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-base sm:text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -297,37 +297,37 @@ export default function B2CModal({ isOpen, onClose, onSave, initialData }) {
           {/* Notes */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Sale Remarks / Notes
+              Remarks
             </label>
             <textarea
               rows={2}
-              placeholder="e.g. Free tempered glass applied, customer opted for extended warranty"
+              placeholder="e.g. Screen guard installed"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+              className="w-full px-3 py-2 text-base sm:text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-3">
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl transition text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center space-x-2 px-5 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-md shadow-emerald-200 disabled:opacity-50"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-1.5 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 rounded-xl transition shadow-md shadow-emerald-200 disabled:opacity-50"
             >
               {loading ? (
                 <span>Saving...</span>
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{initialData ? 'Update B2C Record' : 'Record B2C Sale'}</span>
+                  <span>{initialData ? 'Update Record' : 'Record Sale'}</span>
                 </>
               )}
             </button>
