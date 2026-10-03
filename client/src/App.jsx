@@ -61,57 +61,122 @@ export default function App() {
     loadData();
   }, [searchTermB2B, statusFilterB2B, searchTermB2C]);
 
-  // B2B Actions
+  // B2B Actions (Optimistic & Instant)
   const handleSaveB2B = async (formData) => {
     if (editingB2B) {
-      await api.updateB2B(editingB2B.id, formData);
+      // Optimistic update
+      const updatedItem = { ...editingB2B, ...formData };
+      setB2bItems(prev => prev.map(item => item.id === editingB2B.id ? updatedItem : item));
       showToast('B2B item updated successfully!');
-    } else {
-      await api.createB2B(formData);
-      showToast('New item added to B2B inventory!');
-    }
-    loadData();
-  };
-
-  const handleDeleteB2B = async (id) => {
-    if (window.confirm('Are you sure you want to delete this B2B inventory record?')) {
       try {
-        await api.deleteB2B(id);
-        showToast('B2B item removed.');
-        loadData();
+        const saved = await api.updateB2B(editingB2B.id, formData);
+        setB2bItems(prev => prev.map(item => item.id === editingB2B.id ? saved : item));
+        api.getStats().then(setStats).catch(console.error);
       } catch (err) {
         showToast(err.message, 'error');
+        loadData();
+      }
+    } else {
+      // Temporary optimistic item
+      const tempId = Date.now();
+      const optimisticItem = { id: tempId, ...formData, created_at: new Date().toISOString() };
+      setB2bItems(prev => [optimisticItem, ...prev]);
+      showToast('New item added to B2B inventory!');
+      try {
+        const created = await api.createB2B(formData);
+        setB2bItems(prev => prev.map(item => item.id === tempId ? created : item));
+        api.getStats().then(setStats).catch(console.error);
+      } catch (err) {
+        showToast(err.message, 'error');
+        loadData();
       }
     }
   };
 
-  // One-Click Transfer Action
-  const handleTransferToB2C = async (id, transferData) => {
-    await api.transferToB2C(id, transferData);
-    showToast('Device successfully sold and transferred to B2C!');
-    loadData();
+  const handleDeleteB2B = async (id) => {
+    if (window.confirm('Are you sure you want to delete this B2B inventory record?')) {
+      const prevList = [...b2bItems];
+      // Instant optimistic removal from UI
+      setB2bItems(prev => prev.filter(item => item.id !== id));
+      showToast('B2B item removed.');
+      try {
+        await api.deleteB2B(id);
+        api.getStats().then(setStats).catch(console.error);
+      } catch (err) {
+        showToast(err.message, 'error');
+        setB2bItems(prevList);
+      }
+    }
   };
 
-  // B2C Actions
+  // One-Click Transfer Action (Optimistic & Instant)
+  const handleTransferToB2C = async (id, transferData) => {
+    // Optimistically update B2B status to 'Sold to B2C'
+    setB2bItems(prev => prev.map(item => item.id === id ? { ...item, status: 'Sold to B2C' } : item));
+    showToast('Device successfully sold and transferred to B2C!');
+    try {
+      const res = await api.transferToB2C(id, transferData);
+      if (res && res.b2c) {
+        setB2cItems(prev => [res.b2c, ...prev]);
+      }
+      api.getStats().then(setStats).catch(console.error);
+    } catch (err) {
+      showToast(err.message, 'error');
+      loadData();
+    }
+  };
+
+  // B2C Actions (Optimistic & Instant)
   const handleSaveB2C = async (formData) => {
     if (editingB2C) {
-      await api.updateB2C(editingB2C.id, formData);
+      const updatedSale = { ...editingB2C, ...formData };
+      setB2cItems(prev => prev.map(s => s.id === editingB2C.id ? updatedSale : s));
       showToast('B2C sale updated successfully!');
+      try {
+        const saved = await api.updateB2C(editingB2C.id, formData);
+        setB2cItems(prev => prev.map(s => s.id === editingB2C.id ? saved : s));
+        api.getStats().then(setStats).catch(console.error);
+      } catch (err) {
+        showToast(err.message, 'error');
+        loadData();
+      }
     } else {
-      await api.createB2C(formData);
+      const tempId = Date.now();
+      const optimisticSale = { id: tempId, ...formData, created_at: new Date().toISOString() };
+      setB2cItems(prev => [optimisticSale, ...prev]);
+      // If IMEI matched in B2B, optimistically mark B2B as sold
+      if (formData.imei) {
+        setB2bItems(prev => prev.map(item => item.imei === formData.imei.trim() ? { ...item, status: 'Sold to B2C' } : item));
+      }
       showToast('New B2C retail sale recorded!');
+      try {
+        const created = await api.createB2C(formData);
+        setB2cItems(prev => prev.map(s => s.id === tempId ? created : s));
+        api.getStats().then(setStats).catch(console.error);
+      } catch (err) {
+        showToast(err.message, 'error');
+        loadData();
+      }
     }
-    loadData();
   };
 
   const handleDeleteB2C = async (id) => {
     if (window.confirm('Delete this B2C sale record? If sourced from B2B, its stock status will be restored.')) {
+      const prevB2C = [...b2cItems];
+      const targetSale = b2cItems.find(s => s.id === id);
+      // Instant UI removal
+      setB2cItems(prev => prev.filter(s => s.id !== id));
+      if (targetSale && targetSale.imei) {
+        setB2bItems(prev => prev.map(item => item.imei === targetSale.imei ? { ...item, status: 'In Stock' } : item));
+      }
+      showToast('B2C record deleted and stock status restored.');
       try {
         await api.deleteB2C(id);
-        showToast('B2C record deleted and stock status restored.');
-        loadData();
+        api.getStats().then(setStats).catch(console.error);
       } catch (err) {
         showToast(err.message, 'error');
+        setB2cItems(prevB2C);
+        loadData();
       }
     }
   };
