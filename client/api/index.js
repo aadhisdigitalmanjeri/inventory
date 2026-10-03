@@ -498,4 +498,14 @@ router.get('/imei/lookup/:imei', async (req, res) => {
 app.use('/api', router);
 app.use('/', router);
 
-export default app;
+export default function handler(req, res) {
+  try {
+    return app(req, res);
+  } catch (err) {
+    console.error('Unhandled serverless error:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message, stack: err.stack });
+    }
+  }
+}
+
